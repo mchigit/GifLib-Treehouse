@@ -34,6 +34,18 @@ public class GifRepository {
         return ALL_GIFS;
     }
 
+    public List<Gif> getFavGifs() {
+        List<Gif> gifs = new ArrayList<>();
+        for (Gif gif : ALL_GIFS) {
+            if (gif.isFavorite()) {
+                gifs.add(gif);
+            }
+        }
+
+        return gifs;
+    }
+
+
     public  List<Gif> findByCategoryID(int id) {
         List<Gif> gifs = new ArrayList<>();
         for (Gif gif : ALL_GIFS) {
@@ -41,7 +53,6 @@ public class GifRepository {
                 gifs.add(gif);
             }
         }
-
         return gifs;
     }
 

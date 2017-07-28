@@ -1,17 +1,21 @@
 package com.teamtreehouse.giflib.model;
 
-/**
- * Created by MICHAELChi on 2017-07-25.
- */
-public class Category {
-    private int id;
-    private String name;
+import java.util.ArrayList;
+import java.util.List;
 
-    public int getId() {
+public class Category {
+    private Long id;
+    private String name;
+    private String colorCode;
+    private List<Gif> gifs = new ArrayList<>();
+
+    public Category(){}
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -23,9 +27,16 @@ public class Category {
         this.name = name;
     }
 
-    public Category(int id, String name) {
-        this.id = id;
-        this.name = name;
-
+    public String getColorCode() {
+        return colorCode;
     }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public List<Gif> getGifs() {
+        return gifs;
+    }
+
 }
