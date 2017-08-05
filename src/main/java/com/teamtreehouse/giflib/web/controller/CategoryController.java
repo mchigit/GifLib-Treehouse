@@ -53,6 +53,9 @@ public class CategoryController {
             model.addAttribute("category", new Category());
         }
         model.addAttribute("colors", Color.values());
+        model.addAttribute("action", "/categories");
+        model.addAttribute("heading", "New Category");
+        model.addAttribute("submit", "Add");
         return "category/form";
     }
 
@@ -60,17 +63,29 @@ public class CategoryController {
     @RequestMapping("categories/{categoryId}/edit")
     public String formEditCategory(@PathVariable Long categoryId, Model model) {
         // TODO: Add model attributes needed for edit form
-
+        if (!model.containsAttribute("category")) {
+            model.addAttribute("category", categoryService.findById(categoryId));
+        }
+        model.addAttribute("colors", Color.values());
+        model.addAttribute("action", "/categories/" + categoryId);
+        model.addAttribute("heading", "Edit Category");
+        model.addAttribute("submit", "Update");
         return "category/form";
     }
 
     // Update an existing category
     @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.POST)
-    public String updateCategory() {
-        // TODO: Update category if valid data was received
+    public String updateCategory(@Valid Category category, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.category", result);
+            redirectAttributes.addFlashAttribute("category", category);
+            return "redirect:/categories/" + category.getId() + "/edit";
+        }
+        categoryService.save(category);
 
+        redirectAttributes.addFlashAttribute("flash", new FlashMessage("Category Successfully Updated", FlashMessage.Status.SUCCESS));
         // TODO: Redirect browser to /categories
-        return null;
+        return "redirect:/categories";
     }
 
     // Add a category
@@ -91,10 +106,18 @@ public class CategoryController {
 
     // Delete an existing category
     @RequestMapping(value = "/categories/{categoryId}/delete", method = RequestMethod.POST)
-    public String deleteCategory(@PathVariable Long categoryId) {
+    public String deleteCategory(@PathVariable Long categoryId, RedirectAttributes redirectAttributes) {
         // TODO: Delete category if it contains no GIFs
+        Category category = categoryService.findById(categoryId);
+
+        if (category.getGifs().size() > 0) {
+            redirectAttributes.addFlashAttribute("flash", new FlashMessage("Only empty categories can be deleted", FlashMessage.Status.FAILURE));
+            return String.format("redirect:/categories/%s/edit", categoryId);
+        }
+        categoryService.delete(category);
+        redirectAttributes.addFlashAttribute("flash", new FlashMessage("Category deleted", FlashMessage.Status.SUCCESS));
 
         // TODO: Redirect browser to /categories
-        return null;
+        return "redirect:/categories";
     }
 }
